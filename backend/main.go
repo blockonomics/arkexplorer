@@ -16,8 +16,8 @@ import (
 )
 
 type Events struct {
-    Timestamp_ms int64 `bun:",pk"`
-    Eventdata string `bun:",type:varchar(4096),notnull"`
+    Timestamp_ms int64  `bun:",pk"`
+    Eventdata    string `bun:",type:text,notnull"`
 }
 
 
