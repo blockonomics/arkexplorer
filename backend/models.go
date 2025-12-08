@@ -6,23 +6,23 @@ type Events struct {
 }
 
 type VTXO struct {
-    Txid      string `bun:",pk"`
-    Vout      int    `bun:",pk"`
-    Amount    int64
-    Script    string
-    CreatedAt int64
-    ExpiresAt int64
-    IsSpent   bool
-    SpentBy   string
-    TxType    string
+    Txid      string `bun:",pk" json:"txid"`
+    Vout      int    `bun:",pk" json:"vout"`
+    Amount    int64  `json:"amount"`
+    Script    string `json:"script"`
+    CreatedAt int64  `json:"createdAt"`
+    ExpiresAt int64  `json:"expiresAt"`
+    IsSpent   bool   `json:"isSpent"`
+    SpentBy   string `json:"spentBy"`
+    TxType    string `json:"txType"`
 }
 
 type NetworkStats struct {
-    ID                    int    `bun:",pk,autoincrement"`
-    Timestamp             int64
-    OnboardingVolume      int64
-    OffboardingVolume     int64
-    NetworkLiquidity      int64
-    VirtualTxCount        int
-    VirtualTxVolume       int64
+    ID               int   `bun:",pk,autoincrement" json:"id"`
+    Timestamp        int64 `json:"timestamp"`
+    OnboardingVolume int64 `json:"onboardingVolume"`
+    OffboardingVolume int64 `json:"offboardingVolume"`
+    NetworkLiquidity int64 `json:"networkLiquidity"`
+    VirtualTxCount   int   `json:"virtualTxCount"`
+    VirtualTxVolume  int64 `json:"virtualTxVolume"`
 }
