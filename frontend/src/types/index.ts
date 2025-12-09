@@ -3,6 +3,8 @@ export interface NetworkStats {
   offboardingVolume: number;
   networkLiquidity: number;
   virtualTxCount: number;
+  virtualTxVolume: number;
+  timeframe: string;
 }
 
 export interface VTXO {
