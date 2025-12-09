@@ -1,23 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, ArrowLeft, Hash, Banknote } from 'lucide-react';
 import { TimeframeTabs } from './components/organisms/TimeframeTabs';
-import { StatsSection } from './components/organisms/StatsSection';
 import { SearchBar } from './components/molecules/SearchBar';
 import { TransactionList } from './components/organisms/TransactionList';
-
-interface NetworkStats {
-  onboardingVolume: number;
-  offboardingVolume: number;
-  networkLiquidity: number;
-  virtualTxCount: number;
-}
-
-interface VTXO {
-  txid: string;
-  vout: number;
-  amount: number;
-  createdAt: number;
-}
+import type { NetworkStats, VTXO } from './types';
+import LiquidityFlowDiagram from './components/organisms/LiquidityFlowDiagram';
 
 function App() {
   const [timeframe, setTimeframe] = useState('24h');
@@ -26,50 +12,18 @@ function App() {
   const [recentTxs, setRecentTxs] = useState<string[]>([]);
 
   useEffect(() => {
-    fetch('http://localhost:5173/api/stats')
-      .then(res => res.json())
-      .then((data: NetworkStats) => setStats(data))
-      .catch(err => console.error('Error fetching stats:', err));
-
     fetch('http://localhost:5173/api/recent-transactions')
       .then(res => res.json())
       .then((data: VTXO[]) => setRecentTxs(data.map(vtxo => vtxo.txid)))
       .catch(err => console.error('Error fetching transactions:', err));
   }, []);
 
-  const networkStats = stats ? [
-    {
-      icon: ArrowRight,
-      label: 'OnBoarding Volume',
-      value: `${stats.onboardingVolume.toFixed(3)} BTC`,
-      valueColor: 'text-green-600'
-    },
-    {
-      icon: ArrowLeft,
-      label: 'Off Boarding Volume',
-      value: `${stats.offboardingVolume.toFixed(3)} BTC`,
-      valueColor: 'text-red-600'
-    },
-    {
-      icon: () => <div className="w-10 h-1 bg-gray-600 rounded-full"></div>,
-      label: 'Ark Network Liquidity',
-      value: `${stats.networkLiquidity.toFixed(3)} BTC`,
-      valueColor: 'text-orange-500'
-    }
-  ] : [];
-
-  const txStats = stats ? [
-    {
-      icon: Hash,
-      label: 'Number of Transactions',
-      value: stats.virtualTxCount
-    },
-    {
-      icon: Banknote,
-      label: 'Transaction Volume',
-      value: '12 BTC'
-    }
-  ] : [];
+  useEffect(() => {
+    fetch(`http://localhost:5173/api/stats?timeframe=${encodeURIComponent(timeframe)}`)
+      .then(res => res.json())
+      .then((data: NetworkStats) => setStats(data))
+      .catch(err => console.error('Error fetching stats:', err));
+  },[timeframe]);
 
   if (!stats) {
     return (
@@ -92,17 +46,7 @@ function App() {
         </div>
 
         <div className="space-y-6">
-          <StatsSection
-            title="Bitcoin ↔ Ark Network Stats"
-            stats={networkStats}
-            columns={3}
-          />
-
-          <StatsSection
-            title="Virtual Transaction Stats"
-            stats={txStats}
-            columns={2}
-          />
+          <LiquidityFlowDiagram stats={stats} />
 
           <SearchBar value={searchQuery} onChange={setSearchQuery} />
 
