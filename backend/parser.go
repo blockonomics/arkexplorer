@@ -74,7 +74,7 @@ func parseAndStore(data map[string]interface{}, ctx context.Context) {
 func processTransaction(tx map[string]interface{}, isCommitmentTx bool, ctx context.Context) {
     spentVtxos := tx["spentVtxos"].([]interface{})
     spendableVtxos := tx["spendableVtxos"].([]interface{})
-    txid := tx["txid"].(string)
+    // txid := tx["txid"].(string)
     
     hasInputs := len(spentVtxos) > 0
     hasOutputs := len(spendableVtxos) > 0
@@ -107,16 +107,29 @@ func processTransaction(tx map[string]interface{}, isCommitmentTx bool, ctx cont
         }).On("DUPLICATE KEY UPDATE").Set("tx_type = VALUES(tx_type)").Exec(ctx)
     }
     
-    // Update spent VTXOs
+    // Process spent VTXOs too (NEW - this is the minimal addition needed)
     for _, v := range spentVtxos {
         vtxo := v.(map[string]interface{})
         outpoint := vtxo["outpoint"].(map[string]interface{})
+        isSwept := vtxo["isSwept"] == true
         
-        DB.NewUpdate().Model((*VTXO)(nil)).
-            Set("is_spent = ?", true).
-            Set("spent_by = ?", txid).
-            Where("txid = ? AND vout = ?", outpoint["txid"].(string), parseInt(outpoint["vout"])).
-            Exec(ctx)
+        var txType string
+        if isSwept {
+            txType = "offboard"
+        } else {
+            txType = determineTxType(hasInputs, hasOutputs, isCommitmentTx, isRefresh, isSwept)
+        }
+        
+        DB.NewInsert().Model(&VTXO{
+            Txid:      outpoint["txid"].(string),
+            Vout:      parseInt(outpoint["vout"]),
+            Amount:    parseAmount(vtxo["amount"]),
+            Script:    vtxo["script"].(string),
+            CreatedAt: parseInt64(vtxo["createdAt"]),
+            ExpiresAt: parseInt64(vtxo["expiresAt"]),
+            IsSpent:   true, // Note: spent VTXOs should have IsSpent = true
+            TxType:    txType,
+        }).On("DUPLICATE KEY UPDATE").Set("tx_type = VALUES(tx_type)").Exec(ctx)
     }
 }
 
@@ -124,15 +137,27 @@ func determineTxType(hasInputs, hasOutputs, isCommitmentTx, isRefresh, isSwept b
     if isRefresh {
         return "refresh"
     }
+    
+    // Unilateral offboarding (swept)
     if isCommitmentTx && isSwept {
         return "offboard"
     }
+    
+    // Cooperative offboarding: spends VTXOs but creates no new spendable VTXOs
+    if isCommitmentTx && hasInputs && !hasOutputs {
+        return "offboard"
+    }
+    
+    // Onboarding: creates new spendable VTXOs
     if isCommitmentTx && hasOutputs && !isSwept {
         return "onboard"
     }
+    
+    // Virtual transfers
     if hasInputs && hasOutputs {
         return "virtual"
     }
+    
     return "unknown"
 }
 

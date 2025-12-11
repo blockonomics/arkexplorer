@@ -25,6 +25,7 @@ func enableCORS(next http.HandlerFunc) http.HandlerFunc {
 
 func main() {
     backfill := flag.Bool("backfill", false, "Backfill events from database")
+    backfillSwept := flag.Bool("backfill-swept", false, "Backfill swept VTXOs to mark as offboard")
     enableCors := flag.Bool("enable-cors", false, "Enable CORS for API endpoints")
     flag.Parse()
 
@@ -45,6 +46,11 @@ func main() {
         return // Exit after backfill
     }
 
+    if *backfillSwept {
+        BackfillSweptVTXOs()
+        return // Exit after backfill
+    }
+
     // Start background jobs
     go ConsumeSSEStream("https://arkade.computer/v1/txs")
     go StartStatsUpdater()
@@ -60,6 +66,6 @@ func main() {
         http.HandleFunc("/api/search", SearchTx)
     }
 
-    fmt.Println("Server starting on :8080...")
-    log.Fatal(http.ListenAndServe(":8080", nil))
+    fmt.Println("Server starting on :8082...")
+    log.Fatal(http.ListenAndServe(":8082", nil))
 }

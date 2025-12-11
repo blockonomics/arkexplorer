@@ -8,7 +8,7 @@ export default defineConfig({
     port: 5173, // frontend dev server
     proxy: {
       '/api': {
-        target: 'http://localhost:8080', // Go backend
+        target: 'http://localhost:8082', // Go backend
         changeOrigin: true,
         secure: false,
       },
