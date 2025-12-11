@@ -98,6 +98,11 @@ func GetRecentTxs(w http.ResponseWriter, r *http.Request) {
 
 func SearchTx(w http.ResponseWriter, r *http.Request) {
     txid := r.URL.Query().Get("txid")
+    if txid == "" {
+        w.WriteHeader(http.StatusBadRequest)
+        json.NewEncoder(w).Encode(map[string]string{"error": "txid required"})
+        return
+    }
     
     var vtxos []VTXO
     ctx := context.Background()

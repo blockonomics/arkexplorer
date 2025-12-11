@@ -12,4 +12,9 @@ export interface VTXO {
   vout: number;
   amount: number;
   createdAt: number;
+  txType: string;
+  isSpent: boolean;
+  expiresAt: number;
+  spentBy: string;
+  script: string;
 }
