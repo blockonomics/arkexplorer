@@ -3,7 +3,7 @@ import { TimeframeTabs } from './components/organisms/TimeframeTabs';
 import { SearchBar } from './components/molecules/SearchBar';
 import { TransactionList } from './components/organisms/TransactionList';
 import type { NetworkStats, VTXO } from './types';
-import LiquidityFlowDiagram from './components/organisms/LiquidityFlowDiagram';
+import NetworkFlowDiagram from './components/organisms/NetworkFlowDiagram';
 
 function App() {
   const [timeframe, setTimeframe] = useState('24h');
@@ -46,7 +46,7 @@ function App() {
         </div>
 
         <div className="space-y-6">
-          <LiquidityFlowDiagram stats={stats} />
+          <NetworkFlowDiagram stats={stats} />
 
           <SearchBar value={searchQuery} onChange={setSearchQuery} />
 
