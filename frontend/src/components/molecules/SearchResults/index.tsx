@@ -1,5 +1,6 @@
 import { AlertCircle} from "lucide-react";
 import type { VTXO } from "../../../types";
+import { ArkAddress } from "../../atoms/ArkAddress";
 
 // Search Results Component
 interface SearchResultsProps {
@@ -66,65 +67,62 @@ export function SearchResults({ results, loading, error, searchQuery }: SearchRe
             key={`${vtxo.txid}-${vtxo.vout}`}
             className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50"
           >
-            <div className="grid grid-cols-2 gap-4">
-              <div>
+            <div className="space-y-4">
+              <div className="col-span-2">
                 <div className="text-sm text-gray-600 mb-1">Transaction ID</div>
                 <div className="font-mono text-sm break-all">{vtxo.txid}</div>
               </div>
-              
-              <div>
-                <div className="text-sm text-gray-600 mb-1">Output Index</div>
-                <div className="font-semibold">{vtxo.vout}</div>
-              </div>
 
-              <div>
-                <div className="text-sm text-gray-600 mb-1">Amount</div>
-                <div className="font-semibold">{formatAmount(vtxo.amount)} BTC</div>
-              </div>
-
-              <div>
-                <div className="text-sm text-gray-600 mb-1">Type</div>
-                <div className="font-semibold capitalize">{vtxo.txType || 'N/A'}</div>
-              </div>
-
-              <div>
-                <div className="text-sm text-gray-600 mb-1">Status</div>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  {vtxo.isSpent ? (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                      Spent
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      Active
-                    </span>
-                  )}
+                  <div className="text-sm text-gray-600 mb-1">Output Index</div>
+                  <div className="font-semibold">{vtxo.vout}</div>
+                </div>
+
+                <div>
+                  <div className="text-sm text-gray-600 mb-1">Amount</div>
+                  <div className="font-semibold">{formatAmount(vtxo.amount)} BTC</div>
+                </div>
+
+                <div>
+                  <div className="text-sm text-gray-600 mb-1">Type</div>
+                  <div className="font-semibold capitalize">{vtxo.txType || 'N/A'}</div>
+                </div>
+
+                <div>
+                  <div className="text-sm text-gray-600 mb-1">Status</div>
+                  <div>
+                    {vtxo.isSpent ? (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        Spent
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        Active
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="text-sm text-gray-600 mb-1">Created At</div>
+                  <div className="text-sm">{formatDate(vtxo.createdAt)}</div>
+                </div>
+
+                <div>
+                  <div className="text-sm text-gray-600 mb-1">Expires At</div>
+                  <div className="text-sm">{formatDate(vtxo.expiresAt)}</div>
                 </div>
               </div>
 
-              <div>
-                <div className="text-sm text-gray-600 mb-1">Created At</div>
-                <div className="text-sm">{formatDate(vtxo.createdAt)}</div>
-              </div>
-
-              <div>
-                <div className="text-sm text-gray-600 mb-1">Expires At</div>
-                <div className="text-sm">{formatDate(vtxo.expiresAt)}</div>
-              </div>
+              <ArkAddress vtxo={vtxo} /> 
 
               {vtxo.isSpent && vtxo.spentBy && (
-                <div className="col-span-2">
+                <div>
                   <div className="text-sm text-gray-600 mb-1">Spent By</div>
                   <div className="font-mono text-sm break-all">{vtxo.spentBy}</div>
                 </div>
               )}
-
-              <div className="col-span-2">
-                <div className="text-sm text-gray-600 mb-1">Script</div>
-                <div className="font-mono text-xs break-all bg-gray-50 p-2 rounded">
-                  {vtxo.script}
-                </div>
-              </div>
             </div>
           </div>
         ))}
