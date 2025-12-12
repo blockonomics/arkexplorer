@@ -1,6 +1,6 @@
 import { bech32 } from "bech32";
 
-function decodeArkScript(scriptHex: string, prefix: "ark:" | "tark:" = "ark:"): string {
+function decodeArkScript(scriptHex: string, prefix: "ark" | "tark" = "ark"): string {
   // Ark scripts are "51 20 <32-byte key>"
   if (!scriptHex.startsWith("5120")) {
     throw new Error("Invalid Ark Taproot script");
@@ -28,7 +28,7 @@ type ArkAddressProps = {
 export const ArkAddress: React.FC<ArkAddressProps> = ({ vtxo }) => {
   let arkAddress: string;
   try {
-    arkAddress = decodeArkScript(vtxo.script, "ark:"); // use "ark" for mainnet
+    arkAddress = decodeArkScript(vtxo.script, "ark"); // use "ark" for mainnet
   } catch (err) {
     console.error(err);
     arkAddress = "Invalid script";
