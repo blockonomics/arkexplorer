@@ -17,14 +17,14 @@ function App() {
   const [recentTxs, setRecentTxs] = useState<string[]>([]);
 
   useEffect(() => {
-    fetch('http://localhost:5173/api/recent-transactions')
+    fetch('http://localhost:8082/api/recent-transactions')
       .then(res => res.json())
       .then((data: string[]) => setRecentTxs(data))
       .catch(err => console.error('Error fetching transactions:', err));
   }, []);
 
   useEffect(() => {
-    fetch(`http://localhost:5173/api/stats?timeframe=${encodeURIComponent(timeframe)}`)
+    fetch(`http://localhost:8082/api/stats?timeframe=${encodeURIComponent(timeframe)}`)
       .then(res => res.json())
       .then((data: NetworkStats) => setStats(data))
       .catch(err => console.error('Error fetching stats:', err));
@@ -52,7 +52,7 @@ function App() {
 
     try {
       const response = await fetch(
-        `http://localhost:5173/api/search?txid=${encodeURIComponent(searchQuery)}`
+        `http://localhost:8082/api/search?txid=${encodeURIComponent(searchQuery)}`
       );
 
       if (!response.ok) {
