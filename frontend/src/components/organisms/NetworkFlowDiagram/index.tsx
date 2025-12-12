@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, HelpCircle } from "lucide-react";
+import { Download, Upload, Activity, Repeat, HelpCircle } from "lucide-react";
 import type { NetworkStats } from "../../../types";
 import Tooltip from "../../atoms/Tooltip";
 
@@ -25,46 +25,52 @@ const NetworkFlowDiagram: React.FC<NetworkFlowDiagramProps> = ({ stats }) => {
       {/* Flow Representation */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
         {/* Onboarding */}
-        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 sm:p-6 border-2 border-green-200">
+        <div className="bg-blue-50 rounded-xl p-4 sm:p-6 border border-blue-100">
           <div className="flex items-center gap-2 mb-2">
-            <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
-            <span className="text-xs sm:text-sm font-medium text-gray-600 uppercase">Onboarding</span>
+            <Download className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+            <span className="text-xs sm:text-sm font-medium text-gray-700 uppercase">Onboarding</span>
             <Tooltip content="Bitcoin locked into the Ark Network">
               <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
             </Tooltip>
           </div>
-          <div className="text-2xl sm:text-3xl font-bold text-green-600 break-all">
+          <div className="text-2xl sm:text-3xl font-bold text-gray-900 break-all">
             {formatBTC(stats.onboardingVolume)} BTC
           </div>
-          <div className="text-xs sm:text-sm text-green-700 mt-1">Bitcoin entering</div>
+          <div className="text-xs sm:text-sm text-gray-600 mt-1">Bitcoin entering</div>
         </div>
 
         {/* Offboarding */}
-        <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-4 sm:p-6 border-2 border-red-200">
+        <div className="bg-amber-50 rounded-xl p-4 sm:p-6 border border-amber-100">
           <div className="flex items-center gap-2 mb-2">
-            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
-            <span className="text-xs sm:text-sm font-medium text-gray-600 uppercase">Offboarding</span>
+            <Upload className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
+            <span className="text-xs sm:text-sm font-medium text-gray-700 uppercase">Offboarding</span>
             <Tooltip content="Bitcoin withdrawn from the Ark Network">
               <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
             </Tooltip>
           </div>
-          <div className="text-2xl sm:text-3xl font-bold text-red-600 break-all">
+          <div className="text-2xl sm:text-3xl font-bold text-gray-900 break-all">
             {formatBTC(stats.offboardingVolume)} BTC
           </div>
-          <div className="text-xs sm:text-sm text-red-700 mt-1">Bitcoin leaving</div>
+          <div className="text-xs sm:text-sm text-gray-600 mt-1">Bitcoin leaving</div>
         </div>
       </div>
 
       {/* Virtual Transactions */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-        <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
-          <div className="text-xs sm:text-sm font-medium text-gray-600 uppercase mb-1">Virtual Tx Count</div>
-          <div className="text-lg sm:text-xl font-bold text-blue-600">{stats.virtualTxCount}</div>
+        <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+          <div className="flex items-center gap-2 mb-1">
+            <Activity className="w-4 h-4 text-slate-600" />
+            <div className="text-xs sm:text-sm font-medium text-gray-700 uppercase">Virtual Tx Count</div>
+          </div>
+          <div className="text-lg sm:text-xl font-bold text-gray-900">{stats.virtualTxCount}</div>
           <div className="text-xs text-gray-500">Transactions in {stats.timeframe}</div>
         </div>
-        <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
-          <div className="text-xs sm:text-sm font-medium text-gray-600 uppercase mb-1">Virtual Tx Volume</div>
-          <div className="text-lg sm:text-xl font-bold text-blue-600 break-all">{formatBTC(stats.virtualTxVolume)} BTC</div>
+        <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+          <div className="flex items-center gap-2 mb-1">
+            <Repeat className="w-4 h-4 text-slate-600" />
+            <div className="text-xs sm:text-sm font-medium text-gray-700 uppercase">Virtual Tx Volume</div>
+          </div>
+          <div className="text-lg sm:text-xl font-bold text-gray-900 break-all">{formatBTC(stats.virtualTxVolume)} BTC</div>
           <div className="text-xs text-gray-500">Total volume in {stats.timeframe}</div>
         </div>
       </div>

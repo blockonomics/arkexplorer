@@ -5,6 +5,7 @@ import { TransactionList } from './components/organisms/TransactionList';
 import type { NetworkStats, VTXO } from './types';
 import NetworkFlowDiagram from './components/organisms/NetworkFlowDiagram';
 import { SearchResults } from './components/molecules/SearchResults';
+import { Footer } from './components/molecules/Footer';
 
 function App() {
   const [timeframe, setTimeframe] = useState('24h');
@@ -102,6 +103,7 @@ function App() {
         />
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
