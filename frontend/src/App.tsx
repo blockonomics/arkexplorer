@@ -6,8 +6,6 @@ import type { NetworkStats, VTXO } from './types';
 import NetworkFlowDiagram from './components/organisms/NetworkFlowDiagram';
 import { SearchResults } from './components/molecules/SearchResults';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8082';
-
 function App() {
   const [timeframe, setTimeframe] = useState('24h');
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,14 +17,14 @@ function App() {
   const [recentTxs, setRecentTxs] = useState<string[]>([]);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/recent-transactions`)
+    fetch(`/api/recent-transactions`)
       .then(res => res.json())
       .then((data: string[]) => setRecentTxs(data))
       .catch(err => console.error('Error fetching transactions:', err));
   }, []);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/stats?timeframe=${encodeURIComponent(timeframe)}`)
+    fetch(`/api/stats?timeframe=${encodeURIComponent(timeframe)}`)
       .then(res => res.json())
       .then((data: NetworkStats) => setStats(data))
       .catch(err => console.error('Error fetching stats:', err));
@@ -55,7 +53,7 @@ function App() {
 
     try {
       const response = await fetch(
-        `${API_URL}/api/search?txid=${encodeURIComponent(searchTerm)}`
+        `/api/search?txid=${encodeURIComponent(searchTerm)}`
       );
 
       if (!response.ok) {
