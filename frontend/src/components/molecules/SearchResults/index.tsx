@@ -1,8 +1,7 @@
-import { AlertCircle} from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import type { VTXO } from "../../../types";
 import { ArkAddress } from "../../atoms/ArkAddress";
 
-// Search Results Component
 interface SearchResultsProps {
   results: VTXO[];
   loading: boolean;
@@ -45,13 +44,22 @@ export function SearchResults({ results, loading, error, searchQuery }: SearchRe
     return null;
   }
 
+  const formatAmount = (amount: number) => {
+    return (amount / 100000000).toFixed(8);
+  };
+
   const formatDate = (timestamp: number) => {
     return new Date(timestamp * 1000).toLocaleString();
   };
 
-  const formatAmount = (amount: number) => {
-    return (amount / 100000000).toFixed(8);
-  };
+  // Group VTXOs by transaction ID
+  const groupedByTxid = results.reduce((acc, vtxo) => {
+    if (!acc[vtxo.txid]) {
+      acc[vtxo.txid] = [];
+    }
+    acc[vtxo.txid].push(vtxo);
+    return acc;
+  }, {} as Record<string, VTXO[]>);
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -62,67 +70,47 @@ export function SearchResults({ results, loading, error, searchQuery }: SearchRe
       </div>
 
       <div className="space-y-4">
-        {results.map((vtxo, index) => (
+        {Object.entries(groupedByTxid).map(([txid, vtxos]) => (
           <div
-            key={`${vtxo.txid}-${vtxo.vout}`}
-            className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50"
+            key={txid}
+            className="border border-gray-200 rounded-lg overflow-hidden"
           >
-            <div className="space-y-4">
-              <div className="col-span-2">
-                <div className="text-sm text-gray-600 mb-1">Transaction ID</div>
-                <div className="font-mono text-sm break-all">{vtxo.txid}</div>
+            <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs text-gray-500 mb-1">Transaction ID</div>
+                  <div className="font-mono text-sm break-all text-gray-900">{txid}</div>
+                </div>
+                <div className="text-right shrink-0">
+                  <div className="text-xs text-gray-500 mb-1">Created</div>
+                  <div className="text-xs text-gray-700">{formatDate(vtxos[0].createdAt)}</div>
+                </div>
               </div>
+            </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">Output Index</div>
-                  <div className="font-semibold">{vtxo.vout}</div>
-                </div>
-
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">Amount</div>
-                  <div className="font-semibold">{formatAmount(vtxo.amount)} BTC</div>
-                </div>
-
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">Type</div>
-                  <div className="font-semibold capitalize">{vtxo.txType || 'N/A'}</div>
-                </div>
-
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">Status</div>
-                  <div>
-                    {vtxo.isSpent ? (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                        Spent
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        Active
-                      </span>
-                    )}
+            <div className="divide-y divide-gray-100">
+              {vtxos.map((vtxo) => (
+                <div key={`${vtxo.txid}-${vtxo.vout}`} className="px-4 py-3 hover:bg-gray-50">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-medium text-gray-700">Output #{vtxo.vout}</span>
+                      {vtxo.isSpent ? (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200">
+                          Spent
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+                          Active
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-semibold text-gray-900">{formatAmount(vtxo.amount)} BTC</div>
+                    </div>
                   </div>
+                  <ArkAddress vtxo={vtxo} />
                 </div>
-
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">Created At</div>
-                  <div className="text-sm">{formatDate(vtxo.createdAt)}</div>
-                </div>
-
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">Expires At</div>
-                  <div className="text-sm">{formatDate(vtxo.expiresAt)}</div>
-                </div>
-              </div>
-
-              <ArkAddress vtxo={vtxo} /> 
-
-              {vtxo.isSpent && vtxo.spentBy && (
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">Spent By</div>
-                  <div className="font-mono text-sm break-all">{vtxo.spentBy}</div>
-                </div>
-              )}
+              ))}
             </div>
           </div>
         ))}
