@@ -19,7 +19,7 @@ function App() {
   useEffect(() => {
     fetch('http://localhost:5173/api/recent-transactions')
       .then(res => res.json())
-      .then((data: VTXO[]) => setRecentTxs(data.map(vtxo => vtxo.txid)))
+      .then((data: string[]) => setRecentTxs(data))
       .catch(err => console.error('Error fetching transactions:', err));
   }, []);
 
@@ -37,6 +37,12 @@ function App() {
       </div>
     );
   }
+
+  const handleTransactionClick = (txId: string) => {
+    setSearchQuery(txId);
+    // Trigger your search function
+    handleSearch(txId);
+  };
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
@@ -81,16 +87,19 @@ function App() {
 
           <SearchBar value={searchQuery} onChange={setSearchQuery} onSearch={handleSearch} />
 
-          {hasSearched && (
-            <SearchResults
-              results={searchResults}
-              loading={searchLoading}
-              error={searchError}
-              searchQuery={searchQuery}
-            />
-          )}
+        {hasSearched && (
+          <SearchResults
+            results={searchResults}
+            loading={searchLoading}
+            error={searchError}
+            searchQuery={searchQuery}
+          />
+        )}
 
-          <TransactionList transactions={recentTxs} />
+        <TransactionList 
+          transactions={recentTxs} 
+          onTransactionClick={handleTransactionClick}
+        />
         </div>
       </div>
     </div>

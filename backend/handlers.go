@@ -88,12 +88,33 @@ func GetStats(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetRecentTxs(w http.ResponseWriter, r *http.Request) {
-    var vtxos []VTXO
     ctx := context.Background()
-    DB.NewSelect().Model(&vtxos).Order("created_at DESC").Limit(20).Scan(ctx, &vtxos)
-    
+
+    var results []struct {
+        Txid      string
+        CreatedAt int64
+    }
+
+    err := DB.NewSelect().
+        Model((*VTXO)(nil)).
+        ColumnExpr("DISTINCT txid, created_at").
+        Order("created_at DESC").
+        Limit(10).
+        Scan(ctx, &results)
+
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    // Extract just the txids
+    txids := make([]string, len(results))
+    for i, r := range results {
+        txids[i] = r.Txid
+    }
+
     w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(vtxos)
+    json.NewEncoder(w).Encode(txids)
 }
 
 func SearchTx(w http.ResponseWriter, r *http.Request) {
