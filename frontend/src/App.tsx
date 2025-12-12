@@ -40,8 +40,7 @@ function App() {
 
   const handleTransactionClick = (txId: string) => {
     setSearchQuery(txId);
-    // Trigger your search function
-    handleSearch(txId);
+    handleSearch();
   };
 
   const handleSearch = async () => {
