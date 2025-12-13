@@ -149,6 +149,8 @@ func determineTxType(hasInputs, hasOutputs, isCommitmentTx, isRefresh, isSwept b
     }
     
     // Onboarding: creates new spendable VTXOs
+    // TODO: Consider updating to
+    // if isCommitmentTx && !hasInputs && hasOutputs && !isSwept {
     if isCommitmentTx && hasOutputs && !isSwept {
         return "onboard"
     }

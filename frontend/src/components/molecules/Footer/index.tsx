@@ -1,6 +1,7 @@
 import React from 'react';
 import { ExternalLink, Github, Globe, Wallet } from 'lucide-react';
 import blockonomicsLogo from '../../../assets/blockonomics-logo.svg';
+
 export function Footer() {
   return (
     <footer className="bg-white border-t border-gray-200 mt-12">
@@ -10,7 +11,7 @@ export function Footer() {
           {/* Ark Server Info */}
           <div>
             <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">
-              Connected Server
+              Data Source
             </h3>
             <a
               href="https://arkade.money"
@@ -22,6 +23,9 @@ export function Footer() {
               <span className="text-sm">arkade.money</span>
               <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
             </a>
+            <p className="text-xs text-gray-500 mt-2">
+              All statistics shown are for this Ark server
+            </p>
           </div>
 
           {/* Contribute */}
