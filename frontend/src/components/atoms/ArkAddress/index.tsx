@@ -1,5 +1,6 @@
 import { bech32m } from "bech32";
 import { useEffect, useState } from "react";
+import { ASP_URL, CACHE_DURATION, CACHE_KEY } from "../../../constants";
 
 type ASPInfo = {
   aspPubKey: string;
@@ -7,9 +8,6 @@ type ASPInfo = {
   cachedAt: number;
 };
 
-const CACHE_DURATION = 60 * 60 * 1000;
-const CACHE_KEY = "arkade_asp_info";
-const ASP_URL = "https://arkade.computer/v1/info";
 
 /**
  * Fetches the Ark Service Provider (ASP) info, using session storage cache.
@@ -96,8 +94,6 @@ function decodeArkScript(
 
   return bech32m.encode(prefix, words, 1023);
 }
-
-// --- Component Code ---
 
 type ArkAddressProps = {
   vtxo: { script: string };
