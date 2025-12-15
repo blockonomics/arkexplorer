@@ -29,7 +29,7 @@ const NetworkFlowDiagram: React.FC<NetworkFlowDiagramProps> = ({ stats }) => {
           <div className="flex items-center gap-2 mb-2">
             <Download className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
             <span className="text-xs sm:text-sm font-medium text-gray-700 uppercase">Onboarding</span>
-            <Tooltip content="Bitcoin locked into the Ark Network">
+            <Tooltip content="Total amount of Bitcoin deposited into Arkade during this period">
               <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
             </Tooltip>
           </div>
@@ -44,7 +44,7 @@ const NetworkFlowDiagram: React.FC<NetworkFlowDiagramProps> = ({ stats }) => {
           <div className="flex items-center gap-2 mb-2">
             <Upload className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
             <span className="text-xs sm:text-sm font-medium text-gray-700 uppercase">Offboarding</span>
-            <Tooltip content="Bitcoin withdrawn from the Ark Network">
+            <Tooltip content="Bitcoin withdrawn from the Arkade Network">
               <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
             </Tooltip>
           </div>
