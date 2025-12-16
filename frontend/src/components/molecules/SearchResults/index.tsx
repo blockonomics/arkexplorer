@@ -1,6 +1,6 @@
 import { AlertCircle } from "lucide-react";
 import type { VTXO } from "../../../types";
-import { ArkAddress } from "../../atoms/ArkAddress";
+import { ArkAddressField } from "../../atoms/ArkAddress";
 
 interface SearchResultsProps {
   results: VTXO[];
@@ -108,7 +108,7 @@ export function SearchResults({ results, loading, error, searchQuery }: SearchRe
                       <div className="text-lg font-semibold text-gray-900">{formatAmount(vtxo.amount)} BTC</div>
                     </div>
                   </div>
-                  <ArkAddress vtxo={vtxo} />
+                  <ArkAddressField vtxo={vtxo} />
                 </div>
               ))}
             </div>
