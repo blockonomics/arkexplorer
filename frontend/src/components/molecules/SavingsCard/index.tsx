@@ -7,25 +7,33 @@ interface SavingsCardProps {
 }
 
 const SavingsCard: React.FC<SavingsCardProps> = ({ virtualTxCount }) => {
-  const [data, setData] = useState({ btcPrice: 0, satVByte: 0, loading: true });
+  const [data, setData] = useState({ 
+    btcPrice: 0, 
+    avgSatVByte: 0, 
+    loading: true 
+  });
 
   useEffect(() => {
     const fetchMarketData = async () => {
       try {
-        const [priceRes, feeRes] = await Promise.all([
-          // 1. Switched to Coinbase for BTC/USD Price
+        const [priceRes, historyRes] = await Promise.all([
+          // Coinbase is more reliable for CORS on localhost
           fetch("https://api.coinbase.com/v2/prices/BTC-USD/spot"),
-          // 2. Mempool.space usually allows CORS, so we keep it
-          fetch("https://mempool.space/api/v1/fees/recommended")
+          // Fetching fee history for the last 7 days
+          fetch("https://mempool.space/api/v1/fees/mempool-blocks")
         ]);
         
-        const priceData = await priceRes.json();
-        const feeJson = await feeRes.json();
+        const priceJson = await priceRes.json();
+        const historyJson = await historyRes.json();
+
+        // Calculate the average median fee across the retrieved blocks
+        // This smooths out spikes and gives a 'fair' 7-day average
+        const totalMedian = historyJson.reduce((acc: number, block: any) => acc + block.medianFee, 0);
+        const averageFee = totalMedian / historyJson.length;
 
         setData({
-          // Coinbase returns data as { data: { amount: "..." } }
-          btcPrice: parseFloat(priceData.data.amount),
-          satVByte: feeJson.hourFee,
+          btcPrice: parseFloat(priceJson.data.amount),
+          avgSatVByte: averageFee || 1, // Fallback to 1 sat if API is empty
           loading: false,
         });
       } catch (err) {
@@ -39,15 +47,12 @@ const SavingsCard: React.FC<SavingsCardProps> = ({ virtualTxCount }) => {
 
   // Constants for calculation
   const AVG_TX_VBYTES = 140; 
-  const totalSatsSaved = virtualTxCount * (data.satVByte * AVG_TX_VBYTES);
+  const totalSatsSaved = virtualTxCount * (data.avgSatVByte * AVG_TX_VBYTES);
   const totalBTCSaved = totalSatsSaved / 100_000_000;
   const totalUSDSaved = totalBTCSaved * data.btcPrice;
 
-  const formatUSD = (val: number) => 
-    val.toLocaleString(undefined, { style: "currency", currency: "USD" });
-
   return (
-    <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-200 relative overflow h-full">
+    <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-200 relative h-full">
       {data.loading && (
         <div className="absolute inset-0 bg-emerald-50/40 flex items-center justify-center backdrop-blur-[1px] z-10">
           <RefreshCw className="w-4 h-4 text-emerald-600 animate-spin" />
@@ -59,9 +64,13 @@ const SavingsCard: React.FC<SavingsCardProps> = ({ virtualTxCount }) => {
         <div className="text-xs font-bold text-emerald-800 uppercase">Est. Fees Saved</div>
         <Tooltip content={
           <div className="text-xs space-y-2 p-1">
-            <p className="font-bold border-b border-white/20 pb-1">Efficiency Math</p>
-            <p>Ark transactions happen off-chain. On-chain, {virtualTxCount} transfers would cost roughly {data.satVByte} sat/vB.</p>
-            <p className="opacity-80">Based on {data.btcPrice > 0 ? formatUSD(data.btcPrice) : '...'} / BTC</p>
+            <p className="font-bold border-b border-white/20 pb-1 text-white">Fair Estimate</p>
+            <p className="text-gray-200">
+              This estimate uses a <span className="font-bold text-white">7-day moving average</span> of Bitcoin fees ({data.avgSatVByte.toFixed(1)} sat/vB).
+            </p>
+            <p className="text-gray-200">
+              It smooths out daily spikes to show the sustained value Ark provides.
+            </p>
           </div>
         }>
           <HelpCircle className="w-3.5 h-3.5 text-emerald-400 cursor-help" />
@@ -69,7 +78,7 @@ const SavingsCard: React.FC<SavingsCardProps> = ({ virtualTxCount }) => {
       </div>
 
       <div className="text-xl font-bold text-emerald-900">
-        ${totalUSDSaved.toFixed(2)}
+        ${totalUSDSaved.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
       </div>
       
       <div className="text-[10px] text-emerald-600 font-medium truncate">
