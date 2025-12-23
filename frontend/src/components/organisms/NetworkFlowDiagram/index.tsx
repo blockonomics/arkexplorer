@@ -1,6 +1,8 @@
+import React from "react";
 import { Download, Upload, Activity, Repeat, HelpCircle } from "lucide-react";
 import type { NetworkStats } from "../../../types";
 import Tooltip from "../../atoms/Tooltip";
+import SavingsCard from "../../molecules/SavingsCard";
 
 interface NetworkFlowDiagramProps {
   stats: NetworkStats;
@@ -22,16 +24,13 @@ const NetworkFlowDiagram: React.FC<NetworkFlowDiagramProps> = ({ stats }) => {
         </Tooltip>
       </div>
 
-      {/* Flow Representation */}
+      {/* Main Liquidity Movement */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
         {/* Onboarding */}
         <div className="bg-blue-50 rounded-xl p-4 sm:p-6 border border-blue-100">
           <div className="flex items-center gap-2 mb-2">
             <Download className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
             <span className="text-xs sm:text-sm font-medium text-gray-700 uppercase">Onboarding</span>
-            <Tooltip content="Total amount of Bitcoin deposited into Arkade during this period">
-              <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
-            </Tooltip>
           </div>
           <div className="text-2xl sm:text-3xl font-bold text-gray-900 break-all">
             {formatBTC(stats.onboardingVolume)} BTC
@@ -44,9 +43,6 @@ const NetworkFlowDiagram: React.FC<NetworkFlowDiagramProps> = ({ stats }) => {
           <div className="flex items-center gap-2 mb-2">
             <Upload className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
             <span className="text-xs sm:text-sm font-medium text-gray-700 uppercase">Offboarding</span>
-            <Tooltip content="Bitcoin withdrawn from the Arkade Network">
-              <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
-            </Tooltip>
           </div>
           <div className="text-2xl sm:text-3xl font-bold text-gray-900 break-all">
             {formatBTC(stats.offboardingVolume)} BTC
@@ -55,24 +51,32 @@ const NetworkFlowDiagram: React.FC<NetworkFlowDiagramProps> = ({ stats }) => {
         </div>
       </div>
 
-      {/* Virtual Transactions */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+      {/* Activity and Efficiency Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+        {/* Transaction Count */}
         <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
           <div className="flex items-center gap-2 mb-1">
             <Activity className="w-4 h-4 text-slate-600" />
-            <div className="text-xs sm:text-sm font-medium text-gray-700 uppercase">Virtual Tx Count</div>
+            <div className="text-xs sm:text-sm font-medium text-gray-700 uppercase">Total Tx</div>
           </div>
-          <div className="text-lg sm:text-xl font-bold text-gray-900">{stats.virtualTxCount}</div>
-          <div className="text-xs text-gray-500">Transactions in {stats.timeframe}</div>
+          <div className="text-lg sm:text-xl font-bold text-gray-900">
+            {stats.virtualTxCount.toLocaleString()}
+          </div>
         </div>
+
+        {/* Transaction Volume */}
         <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
           <div className="flex items-center gap-2 mb-1">
             <Repeat className="w-4 h-4 text-slate-600" />
-            <div className="text-xs sm:text-sm font-medium text-gray-700 uppercase">Virtual Tx Volume</div>
+            <div className="text-xs sm:text-sm font-medium text-gray-700 uppercase">Volume</div>
           </div>
-          <div className="text-lg sm:text-xl font-bold text-gray-900 break-all">{formatBTC(stats.virtualTxVolume)} BTC</div>
-          <div className="text-xs text-gray-500">Total volume in {stats.timeframe}</div>
+          <div className="text-lg sm:text-xl font-bold text-gray-900 break-all">
+            {formatBTC(stats.virtualTxVolume)} BTC
+          </div>
         </div>
+
+        {/* Savings Card */}
+        <SavingsCard virtualTxCount={stats.virtualTxCount} />
       </div>
     </div>
   );
