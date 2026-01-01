@@ -2,7 +2,9 @@ import React, { useMemo } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
 const NetworkTrendsChart: React.FC<{ trends: any[] | null }> = ({ trends }) => {
-  const [activeTab, setActiveTab] = React.useState<"volume" | "count">("volume");
+
+  const [activeTab, setActiveTab] = React.useState<"volume" | "count" | "flow">("volume");
+
 
   const chartData = useMemo(() => {
     if (!trends || !Array.isArray(trends)) return [];
@@ -66,15 +68,23 @@ const NetworkTrendsChart: React.FC<{ trends: any[] | null }> = ({ trends }) => {
         <h2 className="text-lg font-bold text-gray-900">Network Growth</h2>
         <div className="flex bg-gray-100 p-1 rounded-lg">
           <button 
-            type="button"
             onClick={() => setActiveTab("volume")}
-            className={`px-3 py-1 text-sm rounded transition-all ${activeTab === 'volume' ? 'bg-white shadow-sm font-medium' : 'text-gray-500'}`}
-          >Volume</button>
+            className={`px-3 py-1 text-sm rounded transition-all ${activeTab === 'volume' ? 'bg-white shadow-sm font-semibold text-blue-600' : 'text-gray-500'}`}
+          >
+            Network Volume
+          </button>
           <button 
-            type="button"
             onClick={() => setActiveTab("count")}
-            className={`px-3 py-1 text-sm rounded transition-all ${activeTab === 'count' ? 'bg-white shadow-sm font-medium' : 'text-gray-500'}`}
-          >TX Count</button>
+            className={`px-3 py-1 text-sm rounded transition-all ${activeTab === 'count' ? 'bg-white shadow-sm font-semibold text-blue-600' : 'text-gray-500'}`}
+          >
+            Activity
+          </button>
+          <button 
+            onClick={() => setActiveTab("flow")}
+            className={`px-3 py-1 text-sm rounded transition-all ${activeTab === 'flow' ? 'bg-white shadow-sm font-semibold text-blue-600' : 'text-gray-500'}`}
+          >
+            Liquidity Flow
+          </button>
         </div>
       </div>
 
@@ -82,61 +92,55 @@ const NetworkTrendsChart: React.FC<{ trends: any[] | null }> = ({ trends }) => {
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-            <XAxis 
-              dataKey="formattedDate" 
-              fontSize={11} 
-              tickLine={false} 
-              axisLine={false}
-              minTickGap={20}
-              interval="preserveStartEnd"
-              tick={{ fill: '#94a3b8' }}
-            />
-            <YAxis 
-              fontSize={12} 
-              tickLine={false} 
-              axisLine={false}
-              tickFormatter={(val) => activeTab === 'volume' ? `${val.toFixed(2)}` : val}
-            />
-            <Tooltip 
-              contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-              formatter={(value: any) => [
-                activeTab === 'volume' ? `${Number(value).toFixed(4)} BTC` : value, 
-                activeTab === 'volume' ? 'Volume' : 'Transactions'
-              ]}
-            />
-            <Legend iconType="circle" />
-            
-            {activeTab === "volume" ? (
-              <>
-                <Area 
-                  type="monotone"
-                  name="Virtual Vol" 
-                  dataKey="virtualTxVolume" 
-                  stroke="#7C3AED" 
-                  fill="#7C3AED" 
-                  fillOpacity={0.1} 
-                  strokeWidth={2} 
-                />
-                <Area 
-                  type="monotone"
-                  name="Onboard Vol" 
-                  dataKey="onboardingVolume" 
-                  stroke="#2563EB" 
-                  fill="#2563EB" 
-                  fillOpacity={0.1} 
-                  strokeWidth={2} 
-                />
-              </>
-            ) : (
+            <XAxis dataKey="formattedDate" fontSize={11} tickLine={false} axisLine={false} />
+            <YAxis fontSize={11} tickLine={false} axisLine={false} />
+            <Tooltip />
+            <Legend />
+
+            {/* View 1: Virtual Volume Only */}
+            {activeTab === "volume" && (
               <Area 
-                type="monotone"
-                name="Virtual Txs" 
+                type="monotone" 
+                name="Virtual Volume" 
+                dataKey="virtualTxVolume" 
+                stroke="#7C3AED" 
+                fill="#7C3AED" 
+                fillOpacity={0.1} 
+              />
+            )}
+
+            {/* View 2: Transaction Count */}
+            {activeTab === "count" && (
+              <Area 
+                type="monotone" 
+                name="Transactions" 
                 dataKey="virtualTxCount" 
                 stroke="#10B981" 
                 fill="#10B981" 
                 fillOpacity={0.1} 
-                strokeWidth={2} 
               />
+            )}
+
+            {/* View 3: Onboarding vs Offboarding (Flow) */}
+            {activeTab === "flow" && (
+              <>
+                <Area 
+                  type="monotone" 
+                  name="Onboarding" 
+                  dataKey="onboardingVolume" 
+                  stroke="#2563EB" 
+                  fill="#2563EB" 
+                  fillOpacity={0.1} 
+                />
+                <Area 
+                  type="monotone" 
+                  name="Offboarding" 
+                  dataKey="offboardingVolume" 
+                  stroke="#F59E0B" 
+                  fill="#F59E0B" 
+                  fillOpacity={0.1} 
+                />
+              </>
             )}
           </AreaChart>
         </ResponsiveContainer>
