@@ -132,3 +132,69 @@ func SearchTx(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(vtxos)
 }
+
+func GetNetworkTrends(w http.ResponseWriter, r *http.Request) {
+    ctx := r.Context()
+    
+    timeframe := r.URL.Query().Get("timeframe")
+    if timeframe == "" { timeframe = "24h" }
+    
+    now := time.Now().Unix() // Use Unix() directly for seconds
+    var periodStartSeconds int64
+    var limit int
+    
+    // Default to daily grouping
+    dateFormat := "DATE(FROM_UNIXTIME(created_at))"
+
+    switch timeframe {
+    case "24h":
+        periodStartSeconds = now - (24 * 3600)
+        limit = 24
+        // For 24h, group by Hour so the chart isn't just one single dot
+        dateFormat = "DATE_FORMAT(FROM_UNIXTIME(created_at), '%Y-%m-%d %H:00')"
+    case "1w":
+        periodStartSeconds = now - (7 * 24 * 3600)
+        limit = 7
+    case "1month":
+        periodStartSeconds = now - (30 * 24 * 3600)
+        limit = 30
+    default:
+        periodStartSeconds = now - (30 * 24 * 3600)
+        limit = 30
+    }
+
+    type TrendPoint struct {
+        DisplayDate       string  `json:"displayDate" bun:"display_date"`
+        OnboardingVolume  float64 `json:"onboardingVolume" bun:"onboarding_volume"`
+        OffboardingVolume float64 `json:"offboardingVolume" bun:"offboarding_volume"`
+        VirtualTxVolume   float64 `json:"virtualTxVolume" bun:"virtual_tx_volume"`
+        VirtualTxCount    int     `json:"virtualTxCount" bun:"virtual_tx_count"`
+    }
+
+    // IMPORTANT: Initialize with make so it returns [] instead of null in JSON
+    history := make([]TrendPoint, 0)
+
+    err := DB.NewSelect().
+        Model((*VTXO)(nil)).
+        ColumnExpr(dateFormat + " AS display_date").
+        ColumnExpr("SUM(CASE WHEN tx_type = 'onboard' THEN amount ELSE 0 END) / 100000000.0 AS onboarding_volume").
+        ColumnExpr("SUM(CASE WHEN tx_type = 'offboard' THEN amount ELSE 0 END) / 100000000.0 AS offboarding_volume").
+        ColumnExpr("SUM(CASE WHEN tx_type = 'virtual' THEN amount ELSE 0 END) / 100000000.0 AS virtual_tx_volume").
+        ColumnExpr("COUNT(CASE WHEN tx_type = 'virtual' THEN 1 END) AS virtual_tx_count").
+        Where("created_at >= ?", periodStartSeconds).
+        Group("display_date").
+        Order("display_date ASC").
+        Limit(limit).
+        Scan(ctx, &history)
+
+    if err != nil {
+        log.Printf("SQL Error: %v", err)
+        // Even on error, send an empty array to prevent frontend crash
+        w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode([]TrendPoint{})
+        return
+    }
+
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(history)
+}

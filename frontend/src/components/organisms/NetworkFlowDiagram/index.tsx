@@ -3,16 +3,11 @@ import { Download, Upload, Activity, Repeat, HelpCircle } from "lucide-react";
 import type { NetworkStats } from "../../../types";
 import Tooltip from "../../atoms/Tooltip";
 import SavingsCard from "../../molecules/SavingsCard";
+import { formatBTC } from "../../../utils/formatters";
 
 interface NetworkFlowDiagramProps {
   stats: NetworkStats;
 }
-
-const formatBTC = (value: number) =>
-  new Intl.NumberFormat("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 8,
-  }).format(value);
 
 const NetworkFlowDiagram: React.FC<NetworkFlowDiagramProps> = ({ stats }) => {
   return (

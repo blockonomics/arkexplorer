@@ -60,10 +60,12 @@ func main() {
         http.HandleFunc("/api/stats", enableCORS(GetStats))
         http.HandleFunc("/api/recent-transactions", enableCORS(GetRecentTxs))
         http.HandleFunc("/api/search", enableCORS(SearchTx))
+        http.HandleFunc("/api/trends", enableCORS(GetNetworkTrends)) 
     } else {
         http.HandleFunc("/api/stats", GetStats)
         http.HandleFunc("/api/recent-transactions", GetRecentTxs)
         http.HandleFunc("/api/search", SearchTx)
+        http.HandleFunc("/api/trends", GetNetworkTrends)
     }
 
     fmt.Println("Server starting on :8082...")
