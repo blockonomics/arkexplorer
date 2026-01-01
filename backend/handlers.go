@@ -6,85 +6,112 @@ import (
     "net/http"
     "time"
     "log"
+    "math"
 )
 
 func GetStats(w http.ResponseWriter, r *http.Request) {
-    ctx := context.Background()
-    
-    // Parse timeframe parameter (default to 24h)
-    timeframe := r.URL.Query().Get("timeframe")
-    if timeframe == "" {
-        timeframe = "24h"
-    }
-    
-    // Calculate period start based on timeframe
-    now := time.Now().UnixMilli()
-    var periodStartSeconds int64
-    
-    switch timeframe {
-    case "24h":
-        periodStartSeconds = (now - 24*3600000) / 1000
-    case "1w":
-        periodStartSeconds = (now - 7*24*3600000) / 1000
-    case "1month":
-        periodStartSeconds = (now - 30*24*3600000) / 1000
-    case "all time":
-        periodStartSeconds = 0 // Beginning of time
-    default:
-        http.Error(w, "Invalid timeframe. Use: 24h, 1w, 1month, or 'all time'", http.StatusBadRequest)
-        return
-    }
-    
-    var liquidity, vtxVolume, onboardVol, offboardVol int64
-    var vtxCount int
-    
-    // Network liquidity (current unspent VTXOs)
-    if err := DB.NewSelect().Model((*VTXO)(nil)).
-        Where("is_spent = ?", false).
-        ColumnExpr("COALESCE(SUM(amount), 0)").
-        Scan(ctx, &liquidity); err != nil {
-        log.Printf("Error calculating liquidity: %v", err)
-        http.Error(w, "Error calculating stats", http.StatusInternalServerError)
-        return
-    }
-    
-    // Virtual tx count for period
-    vtxCount, _ = DB.NewSelect().Model((*VTXO)(nil)).
-        Where("tx_type = ?", "virtual").
-        Where("created_at > ?", periodStartSeconds).
-        Count(ctx)
-    
-    // Virtual tx volume for period
-    DB.NewSelect().Model((*VTXO)(nil)).
-        Where("tx_type = ?", "virtual").
-        Where("created_at > ?", periodStartSeconds).
-        ColumnExpr("COALESCE(SUM(amount), 0)").
-        Scan(ctx, &vtxVolume)
-    
-    // Onboarding volume for period
-    DB.NewSelect().Model((*VTXO)(nil)).
-        Where("tx_type = ?", "onboard").
-        Where("created_at > ?", periodStartSeconds).
-        ColumnExpr("COALESCE(SUM(amount), 0)").
-        Scan(ctx, &onboardVol)
-    
-    // Offboarding volume for period
-    DB.NewSelect().Model((*VTXO)(nil)).
-        Where("tx_type = ?", "offboard").
-        Where("created_at > ?", periodStartSeconds).
-        ColumnExpr("COALESCE(SUM(amount), 0)").
-        Scan(ctx, &offboardVol)
-    
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(map[string]interface{}{
-        "onboardingVolume":  float64(onboardVol) / 100000000,
-        "offboardingVolume": float64(offboardVol) / 100000000,
-        "networkLiquidity":  float64(liquidity) / 100000000,
-        "virtualTxCount":    vtxCount,
-        "virtualTxVolume":   float64(vtxVolume) / 100000000,
-        "timeframe":         timeframe,
-        "timestamp":         now,
-    })
+	ctx := r.Context()
+
+	// 1. Parse Timeframe
+	timeframe := r.URL.Query().Get("timeframe")
+	if timeframe == "" {
+		timeframe = "24h"
+	}
+
+	now := time.Now().Unix()
+	var periodSeconds int64
+	isAllTime := timeframe == "all time"
+
+	switch timeframe {
+	case "24h":
+		periodSeconds = 24 * 3600
+	case "1w":
+		periodSeconds = 7 * 24 * 3600
+	case "1month":
+		periodSeconds = 30 * 24 * 3600
+	case "all time":
+		periodSeconds = 0
+	default:
+		periodSeconds = 24 * 3600
+	}
+
+	// Calculate the two time windows
+	currentStart := now - periodSeconds
+	if isAllTime {
+		currentStart = 0
+	}
+	previousStart := currentStart - periodSeconds
+
+	// Data structures
+	type PeriodMetrics struct {
+		Volume float64 `bun:"volume"`
+		Count  int     `bun:"count"`
+	}
+	var current, previous PeriodMetrics
+	var liquidity, onboardVol, offboardVol float64
+
+	// 2. Current Period Stats (Virtual TXs)
+	// We use a single query to get both SUM and COUNT for efficiency
+	err := DB.NewSelect().Model((*VTXO)(nil)).
+		ColumnExpr("COALESCE(SUM(amount), 0) / 100000000.0 AS volume").
+		ColumnExpr("COUNT(*) AS count").
+		Where("tx_type = 'virtual' AND created_at >= ?", currentStart).
+		Scan(ctx, &current)
+	if err != nil {
+		log.Printf("Error fetching current stats: %v", err)
+	}
+
+	// 3. Previous Period Stats (For Change Calculation)
+	// We skip this if 'all time' because there is no 'before the beginning'
+	if !isAllTime {
+		DB.NewSelect().Model((*VTXO)(nil)).
+			ColumnExpr("COALESCE(SUM(amount), 0) / 100000000.0 AS volume").
+			ColumnExpr("COUNT(*) AS count").
+			Where("tx_type = 'virtual' AND created_at >= ? AND created_at < ?", previousStart, currentStart).
+			Scan(ctx, &previous)
+	}
+
+	// 4. Liquidity & Flows
+	// Liquidity is always the total current unspent supply
+	DB.NewSelect().Model((*VTXO)(nil)).
+		Where("is_spent = ?", false).
+		ColumnExpr("COALESCE(SUM(amount), 0) / 100000000.0").
+		Scan(ctx, &liquidity)
+
+	// Flows are tied to the selected timeframe
+	DB.NewSelect().Model((*VTXO)(nil)).
+		Where("tx_type = 'onboard' AND created_at >= ?", currentStart).
+		ColumnExpr("COALESCE(SUM(amount), 0) / 100000000.0").
+		Scan(ctx, &onboardVol)
+
+	DB.NewSelect().Model((*VTXO)(nil)).
+		Where("tx_type = 'offboard' AND created_at >= ?", currentStart).
+		ColumnExpr("COALESCE(SUM(amount), 0) / 100000000.0").
+		Scan(ctx, &offboardVol)
+
+	// 5. Math Helper for Percentages
+	calcChange := func(curr, prev float64) float64 {
+		if prev == 0 {
+			if curr > 0 { return 100.0 } // 100% growth if we went from 0 to something
+			return 0
+		}
+		change := ((curr - prev) / prev) * 100
+		return math.Round(change*10) / 10 // Round to 1 decimal place (e.g. 12.5)
+	}
+
+	// 6. Final Response
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"onboardingVolume":  onboardVol,
+		"offboardingVolume": offboardVol,
+		"networkLiquidity":  liquidity,
+		"virtualTxCount":    current.Count,
+		"virtualTxVolume":   current.Volume,
+		"txCountChange":     calcChange(float64(current.Count), float64(previous.Count)),
+		"volumeChange":      calcChange(current.Volume, previous.Volume),
+		"timeframe":         timeframe,
+		"timestamp":         now * 1000, // Frontend expects milliseconds
+	})
 }
 
 func GetRecentTxs(w http.ResponseWriter, r *http.Request) {

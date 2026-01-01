@@ -6,7 +6,7 @@ import type { NetworkStats, VTXO } from './types';
 import NetworkFlowDiagram from './components/organisms/NetworkFlowDiagram';
 import { SearchResults } from './components/molecules/SearchResults';
 import { Footer } from './components/molecules/Footer';
-import NetworkTrendsChart from './components/organisms/NetworkTrendsChart';
+// import NetworkTrendsChart from './components/organisms/NetworkTrendsChart';
 
 function App() {
   const [timeframe, setTimeframe] = useState('24h');
@@ -15,7 +15,7 @@ function App() {
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
-  const [trends, setTrends] = useState<NetworkStats[]>([]);
+  // const [trends, setTrends] = useState<NetworkStats[]>([]);
   const [stats, setStats] = useState<NetworkStats | null>(null);
   const [recentTxs, setRecentTxs] = useState<string[]>([]);
 
@@ -33,17 +33,17 @@ function App() {
         const statsData = await statsRes.json();
         setStats(statsData);
 
-        const trendsRes = await fetch(`/api/trends?timeframe=${timeframe}`);
-        const trendsData = await trendsRes.json();
+        // const trendsRes = await fetch(`/api/trends?timeframe=${timeframe}`);
+        // const trendsData = await trendsRes.json();
         
-        if (Array.isArray(trendsData)) {
-          setTrends(trendsData);
-        } else {
-          setTrends([]);
-        }
+        // if (Array.isArray(trendsData)) {
+        //   setTrends(trendsData);
+        // } else {
+        //   setTrends([]);
+        // }
       } catch (err) {
         console.error("Fetch error:", err);
-        setTrends([]);
+        // setTrends([]);
       }
     };
 
@@ -102,7 +102,7 @@ function App() {
 
         <div className="space-y-6">
           <NetworkFlowDiagram stats={stats} />
-          <NetworkTrendsChart trends={trends || []} />
+          {/* <NetworkTrendsChart trends={trends || []} /> */}
 
           <SearchBar value={searchQuery} onChange={setSearchQuery} onSearch={handleSearch} />
 
