@@ -139,18 +139,16 @@ func GetNetworkTrends(w http.ResponseWriter, r *http.Request) {
     timeframe := r.URL.Query().Get("timeframe")
     if timeframe == "" { timeframe = "24h" }
     
-    now := time.Now().Unix() // Use Unix() directly for seconds
+    now := time.Now().Unix()
     var periodStartSeconds int64
     var limit int
     
-    // Default to daily grouping
     dateFormat := "DATE(FROM_UNIXTIME(created_at))"
 
     switch timeframe {
     case "24h":
         periodStartSeconds = now - (24 * 3600)
         limit = 24
-        // For 24h, group by Hour so the chart isn't just one single dot
         dateFormat = "DATE_FORMAT(FROM_UNIXTIME(created_at), '%Y-%m-%d %H:00')"
     case "1w":
         periodStartSeconds = now - (7 * 24 * 3600)
@@ -158,6 +156,9 @@ func GetNetworkTrends(w http.ResponseWriter, r *http.Request) {
     case "1month":
         periodStartSeconds = now - (30 * 24 * 3600)
         limit = 30
+    case "all time":
+        periodStartSeconds = 0     // No time floor
+        limit = 2000               // Large limit to capture all history
     default:
         periodStartSeconds = now - (30 * 24 * 3600)
         limit = 30
@@ -171,7 +172,6 @@ func GetNetworkTrends(w http.ResponseWriter, r *http.Request) {
         VirtualTxCount    int     `json:"virtualTxCount" bun:"virtual_tx_count"`
     }
 
-    // IMPORTANT: Initialize with make so it returns [] instead of null in JSON
     history := make([]TrendPoint, 0)
 
     err := DB.NewSelect().
@@ -189,7 +189,6 @@ func GetNetworkTrends(w http.ResponseWriter, r *http.Request) {
 
     if err != nil {
         log.Printf("SQL Error: %v", err)
-        // Even on error, send an empty array to prevent frontend crash
         w.Header().Set("Content-Type", "application/json")
         json.NewEncoder(w).Encode([]TrendPoint{})
         return
