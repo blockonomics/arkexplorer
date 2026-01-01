@@ -61,30 +61,21 @@ const NetworkTrendsChart: React.FC<{ trends: any[] | null }> = ({ trends }) => {
     );
   }
 
+  const getBtnClass = (tab: string) => `
+    px-3 py-1.5 text-sm rounded-md transition-all duration-200
+    ${activeTab === tab 
+      ? 'bg-white shadow-sm border border-gray-100 font-bold text-blue-600' 
+      : 'text-gray-500 hover:bg-gray-200/50 hover:text-gray-700'}
+  `;
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-bold text-gray-900">Network Growth</h2>
-        <div className="flex bg-gray-100 p-1 rounded-lg">
-          <button 
-            onClick={() => setActiveTab("volume")}
-            className={`px-3 py-1 text-sm rounded transition-all ${activeTab === 'volume' ? 'bg-white shadow-sm font-semibold text-blue-600' : 'text-gray-500'}`}
-          >
-            Network Volume
-          </button>
-          <button 
-            onClick={() => setActiveTab("count")}
-            className={`px-3 py-1 text-sm rounded transition-all ${activeTab === 'count' ? 'bg-white shadow-sm font-semibold text-blue-600' : 'text-gray-500'}`}
-          >
-            Activity
-          </button>
-          <button 
-            onClick={() => setActiveTab("flow")}
-            className={`px-3 py-1 text-sm rounded transition-all ${activeTab === 'flow' ? 'bg-white shadow-sm font-semibold text-blue-600' : 'text-gray-500'}`}
-          >
-            Liquidity Flow
-          </button>
+        <h2 className="text-lg font-bold text-gray-900">Network Activity</h2>
+        <div className="flex bg-gray-100 p-1 rounded-lg w-full sm:w-auto">
+          <button onClick={() => setActiveTab("volume")} className={getBtnClass("volume")}>TX BTC Volume</button>
+          <button onClick={() => setActiveTab("count")} className={getBtnClass("count")}>TX Count</button>
+          <button onClick={() => setActiveTab("flow")} className={getBtnClass("flow")}>Liquidity Flow</button>
         </div>
       </div>
 
