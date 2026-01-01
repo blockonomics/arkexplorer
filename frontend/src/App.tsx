@@ -45,21 +45,20 @@ function App() {
   };
 
   const handleSearch = async (query?: string) => {
-    const searchTerm = query || searchQuery;
-    if (!searchTerm.trim()) return;
+    // If query is an Event object (from the button click), ignore it and use state
+    const searchTerm = typeof query === 'string' ? query : searchQuery;
+
+    // Simple check: if empty or only spaces, stop here
+    if (!searchTerm?.trim()) return;
 
     setSearchLoading(true);
     setSearchError(null);
     setHasSearched(true);
 
     try {
-      const response = await fetch(
-        `/api/search?txid=${encodeURIComponent(searchTerm)}`
-      );
+      const response = await fetch(`/api/search?txid=${encodeURIComponent(searchTerm.trim())}`);
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch search results');
-      }
+      if (!response.ok) throw new Error('Transaction not found');
 
       const data = await response.json();
       setSearchResults(data || []);
