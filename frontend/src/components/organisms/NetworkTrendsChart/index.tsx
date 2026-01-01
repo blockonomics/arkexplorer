@@ -6,12 +6,20 @@ const NetworkTrendsChart: React.FC<{ trends: any[] | null }> = ({ trends }) => {
 
   const chartData = useMemo(() => {
     if (!trends || !Array.isArray(trends)) return [];
-    return trends.map(item => ({
-      ...item,
-      formattedDate: item.displayDate 
-        ? new Date(item.displayDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
-        : '---'
-    }));
+    
+    return trends.map(item => {
+      const date = new Date(item.displayDate);
+      
+      // Check if the string contains a space (our hourly format: YYYY-MM-DD HH:00)
+      const isHourly = item.displayDate.includes(' ');
+
+      return {
+        ...item,
+        formattedDate: isHourly 
+          ? date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false })
+          : date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+      };
+    });
   }, [trends]);
 
   if (trends === null) {
@@ -76,10 +84,12 @@ const NetworkTrendsChart: React.FC<{ trends: any[] | null }> = ({ trends }) => {
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
             <XAxis 
               dataKey="formattedDate" 
-              fontSize={12} 
+              fontSize={11} 
               tickLine={false} 
-              axisLine={false} 
-              minTickGap={30}
+              axisLine={false}
+              minTickGap={20}
+              interval="preserveStartEnd"
+              tick={{ fill: '#94a3b8' }}
             />
             <YAxis 
               fontSize={12} 
@@ -98,11 +108,35 @@ const NetworkTrendsChart: React.FC<{ trends: any[] | null }> = ({ trends }) => {
             
             {activeTab === "volume" ? (
               <>
-                <Area name="Virtual Vol" dataKey="virtualTxVolume" stroke="#7C3AED" fill="#7C3AED" fillOpacity={0.1} strokeWidth={2} />
-                <Area name="Onboard Vol" dataKey="onboardingVolume" stroke="#2563EB" fill="#2563EB" fillOpacity={0.1} strokeWidth={2} />
+                <Area 
+                  type="monotone"
+                  name="Virtual Vol" 
+                  dataKey="virtualTxVolume" 
+                  stroke="#7C3AED" 
+                  fill="#7C3AED" 
+                  fillOpacity={0.1} 
+                  strokeWidth={2} 
+                />
+                <Area 
+                  type="monotone"
+                  name="Onboard Vol" 
+                  dataKey="onboardingVolume" 
+                  stroke="#2563EB" 
+                  fill="#2563EB" 
+                  fillOpacity={0.1} 
+                  strokeWidth={2} 
+                />
               </>
             ) : (
-              <Area name="Virtual Txs" dataKey="virtualTxCount" stroke="#10B981" fill="#10B981" fillOpacity={0.1} strokeWidth={2} />
+              <Area 
+                type="monotone"
+                name="Virtual Txs" 
+                dataKey="virtualTxCount" 
+                stroke="#10B981" 
+                fill="#10B981" 
+                fillOpacity={0.1} 
+                strokeWidth={2} 
+              />
             )}
           </AreaChart>
         </ResponsiveContainer>
