@@ -73,7 +73,6 @@ const Tooltip: React.FC<TooltipProps> = ({ children, content }) => {
               className="absolute w-2 h-2 bg-gray-900 rotate-45"
               style={{
                 left: context.middlewareData.arrow?.x != null ? `${context.middlewareData.arrow.x}px` : '',
-                top: context.middlewareData.arrow?.y != null ? `${context.middlewareData.arrow.y}px` : '',
                 // Position logic for arrow based on where the tooltip is flipped
                 bottom: context.placement.startsWith('top') ? '-4px' : '',
                 top: context.placement.startsWith('bottom') ? '-4px' : '',
