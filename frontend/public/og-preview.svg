@@ -1,0 +1,96 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="orangeGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#ea580c"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+
+  <!-- Right-side network decoration: connecting lines -->
+  <line x1="920" y1="155" x2="1060" y2="210" stroke="#f97316" stroke-width="1" opacity="0.18"/>
+  <line x1="1060" y1="210" x2="1110" y2="355" stroke="#f97316" stroke-width="1" opacity="0.18"/>
+  <line x1="1110" y1="355" x2="980" y2="445" stroke="#f97316" stroke-width="1" opacity="0.18"/>
+  <line x1="980" y1="445" x2="855" y2="355" stroke="#f97316" stroke-width="1" opacity="0.18"/>
+  <line x1="855" y1="355" x2="920" y2="155" stroke="#f97316" stroke-width="1" opacity="0.18"/>
+  <line x1="920" y1="155" x2="1110" y2="355" stroke="#f97316" stroke-width="1" opacity="0.1"/>
+  <line x1="1060" y1="210" x2="980" y2="445" stroke="#f97316" stroke-width="1" opacity="0.1"/>
+  <!-- Hub lines -->
+  <line x1="980" y1="295" x2="920" y2="155" stroke="#f97316" stroke-width="1.5" opacity="0.3"/>
+  <line x1="980" y1="295" x2="1060" y2="210" stroke="#f97316" stroke-width="1.5" opacity="0.3"/>
+  <line x1="980" y1="295" x2="1110" y2="355" stroke="#f97316" stroke-width="1.5" opacity="0.3"/>
+  <line x1="980" y1="295" x2="980" y2="445" stroke="#f97316" stroke-width="1.5" opacity="0.3"/>
+  <line x1="980" y1="295" x2="855" y2="355" stroke="#f97316" stroke-width="1.5" opacity="0.3"/>
+
+  <!-- Node glows -->
+  <circle cx="920" cy="155" r="18" fill="#f97316" opacity="0.07"/>
+  <circle cx="1060" cy="210" r="18" fill="#f97316" opacity="0.07"/>
+  <circle cx="1110" cy="355" r="18" fill="#f97316" opacity="0.07"/>
+  <circle cx="980" cy="445" r="18" fill="#f97316" opacity="0.07"/>
+  <circle cx="855" cy="355" r="18" fill="#f97316" opacity="0.07"/>
+  <circle cx="980" cy="295" r="28" fill="#f97316" opacity="0.07"/>
+
+  <!-- Nodes -->
+  <circle cx="920" cy="155" r="8" fill="#f97316" opacity="0.55"/>
+  <circle cx="1060" cy="210" r="10" fill="#f97316" opacity="0.75"/>
+  <circle cx="1110" cy="355" r="11" fill="#f97316" opacity="0.9"/>
+  <circle cx="980" cy="445" r="8" fill="#f97316" opacity="0.5"/>
+  <circle cx="855" cy="355" r="9" fill="#f97316" opacity="0.6"/>
+  <!-- Hub node -->
+  <circle cx="980" cy="295" r="14" fill="#f97316" opacity="0.45"/>
+  <circle cx="980" cy="295" r="7" fill="#f97316" opacity="0.9"/>
+
+  <!-- Left orange accent bar -->
+  <rect x="80" y="165" width="5" height="230" rx="2.5" fill="url(#orangeGrad)"/>
+
+  <!-- Title -->
+  <text x="110" y="283"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="90" font-weight="700" fill="#f8fafc">Ark</text>
+  <text x="110" y="378"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="90" font-weight="700" fill="#f8fafc">Explorer</text>
+
+  <!-- Subtitle -->
+  <text x="112" y="422"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="25" fill="#94a3b8">Bitcoin Layer 2 Network Statistics &amp; VTXO Tracker</text>
+
+  <!-- Tag pills -->
+  <rect x="112" y="455" width="112" height="38" rx="19" fill="#1e293b" stroke="#f97316" stroke-width="1" stroke-opacity="0.45"/>
+  <text x="168" y="479"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="17" fill="#f97316" text-anchor="middle">VTXO</text>
+
+  <rect x="236" y="455" width="102" height="38" rx="19" fill="#1e293b" stroke="#f97316" stroke-width="1" stroke-opacity="0.45"/>
+  <text x="287" y="479"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="17" fill="#f97316" text-anchor="middle">ASP</text>
+
+  <rect x="350" y="455" width="132" height="38" rx="19" fill="#1e293b" stroke="#f97316" stroke-width="1" stroke-opacity="0.45"/>
+  <text x="416" y="479"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="17" fill="#f97316" text-anchor="middle">Layer 2</text>
+
+  <rect x="494" y="455" width="150" height="38" rx="19" fill="#1e293b" stroke="#f97316" stroke-width="1" stroke-opacity="0.45"/>
+  <text x="569" y="479"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="17" fill="#f97316" text-anchor="middle">Real-time</text>
+
+  <!-- Bottom divider -->
+  <line x1="80" y1="558" x2="1120" y2="558" stroke="#334155" stroke-width="1"/>
+
+  <!-- Footer: URL left, branding right -->
+  <text x="112" y="590"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="19" fill="#64748b">arkexplorer.blockonomics.co</text>
+  <text x="1110" y="590"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="19" fill="#64748b" text-anchor="end">by Blockonomics</text>
+</svg>

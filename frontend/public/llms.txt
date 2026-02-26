@@ -1,0 +1,41 @@
+# Ark Explorer
+
+> A real-time blockchain explorer for the Ark Protocol — a Bitcoin Layer 2 network. Tracks VTXOs (Virtual Transaction Outputs), ASP liquidity, onboarding/offboarding flows, and transaction history.
+
+Ark Explorer is built by [Blockonomics](https://www.blockonomics.co) and provides live network statistics for the Ark Protocol, which enables off-chain Bitcoin transactions with fast settlement and low fees. The site is a single-page application requiring no authentication.
+
+## API Endpoints
+
+All endpoints are public and return JSON.
+
+- `GET /api/stats?timeframe={24h|1w|1month|all time}` — Network statistics for the selected period: virtual tx volume (BTC), virtual tx count, total network liquidity, onboarding volume, offboarding volume, and period-over-period change percentages.
+- `GET /api/trends?timeframe={24h|1w|1month|all time}` — Time-series data grouped by hour (24h) or day (1w, 1month, all time). Each data point includes onboarding volume, offboarding volume, virtual tx volume, and virtual tx count.
+- `GET /api/recent-transactions` — The 10 most recent distinct transactions with txid, Unix timestamp, and type.
+- `GET /api/search?txid={txid}` — Returns all VTXOs belonging to a given transaction ID.
+
+## Data Model
+
+A **VTXO** (Virtual Transaction Output) is the core data unit in the Ark Protocol.
+
+Key fields:
+- `txid` — Transaction ID (multiple VTXOs can share a txid within the same round)
+- `amount` — Value in satoshis
+- `tx_type` — One of: `onboard` (BTC entering Ark from Layer 1), `offboard` (BTC exiting Ark to Layer 1), `virtual` (off-chain Ark-to-Ark transfer)
+- `is_spent` — Whether the VTXO has been consumed in a subsequent transaction
+- `created_at` — Unix timestamp of the containing round
+
+**Network Liquidity** = sum of all unspent VTXO amounts currently held in the Ark network.
+
+## Timeframes
+
+- `24h` — Last 24 hours, trends grouped by hour
+- `1w` — Last 7 days, trends grouped by day
+- `1month` — Last 30 days, trends grouped by day
+- `all time` — Full history, trends grouped by day
+
+## About
+
+- Live at: https://arkexplorer.blockonomics.co/
+- Built by: [Blockonomics](https://www.blockonomics.co)
+- Backend: Go with bun ORM (MySQL)
+- Frontend: React + TypeScript + Tailwind CSS + Recharts
