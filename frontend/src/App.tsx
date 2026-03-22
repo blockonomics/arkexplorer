@@ -25,7 +25,7 @@ function App() {
   const [hasSearched, setHasSearched] = useState(false);
   const [trends, setTrends] = useState<TrendPoint[]>([]);
   const [stats, setStats] = useState<NetworkStats | null>(null);
-  const [recentTxs, setRecentTxs] = useState<string[]>([]);
+  const [recentTxs, setRecentTxs] = useState<{ txid: string; createdAt: number; txType: string }[]>([]);
 
   useEffect(() => {
     const onHashChange = () => setActivePage(getPage());
@@ -41,7 +41,7 @@ function App() {
   useEffect(() => {
     fetch(`/api/recent-transactions`)
       .then(res => res.json())
-      .then((data: string[]) => setRecentTxs(data))
+      .then((data) => setRecentTxs(data))
       .catch(err => console.error('Error fetching transactions:', err));
   }, []);
 

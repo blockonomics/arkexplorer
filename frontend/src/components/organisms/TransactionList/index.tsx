@@ -2,8 +2,14 @@
 import React from 'react';
 import { TransactionItem } from '../../molecules/TransactionItem';
 
+interface RecentTx {
+  txid: string;
+  createdAt: number;
+  txType: string;
+}
+
 interface TransactionListProps {
-  transactions: string[];
+  transactions: RecentTx[];
   onTransactionClick?: (txId: string) => void;
 }
 
@@ -14,11 +20,13 @@ export function TransactionList({ transactions, onTransactionClick }: Transactio
         <h2 className="text-lg font-semibold text-gray-900">Recent Transactions</h2>
       </div>
       <div className="divide-y divide-gray-100">
-        {transactions.map((txid) => (
+        {transactions.map((tx) => (
           <TransactionItem
-            key={txid}
-            txid={txid}
-            onClick={() => onTransactionClick?.(txid)}
+            key={tx.txid}
+            txid={tx.txid}
+            createdAt={tx.createdAt}
+            txType={tx.txType}
+            onClick={() => onTransactionClick?.(tx.txid)}
           />
         ))}
       </div>
