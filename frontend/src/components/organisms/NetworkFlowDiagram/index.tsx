@@ -77,12 +77,10 @@ const NetworkFlowDiagram: React.FC<NetworkFlowDiagramProps> = ({ stats }) => {
             <Activity className="w-4 h-4 text-slate-500" />
             <div className="text-xs sm:text-sm font-semibold text-slate-500 uppercase tracking-wider">Total Tx</div>
           </div>
-          <div className="flex items-end justify-between">
-            <div className="text-lg sm:text-xl font-bold text-gray-900 tabular-nums">
-              {stats.virtualTxCount.toLocaleString()}
-            </div>
-            <TrendIndicator value={stats.txCountChange} />
+          <div className="text-lg sm:text-xl font-bold text-gray-900 tabular-nums">
+            {stats.virtualTxCount.toLocaleString()}
           </div>
+          <TrendIndicator value={stats.txCountChange} />
         </div>
 
         {/* Transaction Volume */}
@@ -91,12 +89,10 @@ const NetworkFlowDiagram: React.FC<NetworkFlowDiagramProps> = ({ stats }) => {
             <Repeat className="w-4 h-4 text-slate-500" />
             <div className="text-xs sm:text-sm font-semibold text-slate-500 uppercase tracking-wider">Volume</div>
           </div>
-          <div className="flex items-end justify-between">
-            <div className="text-lg sm:text-xl font-bold text-gray-900 break-all tabular-nums">
-              {formatBTC(stats.virtualTxVolume)} BTC
-            </div>
-            <TrendIndicator value={stats.volumeChange} />
+          <div className="text-lg sm:text-xl font-bold text-gray-900 tabular-nums">
+            {formatBTC(stats.virtualTxVolume)} BTC
           </div>
+          <TrendIndicator value={stats.volumeChange} />
         </div>
 
         {/* Savings Card (Internal Logic) */}
