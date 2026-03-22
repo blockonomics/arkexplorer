@@ -10,6 +10,14 @@ export interface NetworkStats {
   volumeChange?: number;   // e.g., 2.3 or -10.1
 }
 
+export interface TrendPoint {
+  displayDate: string;
+  onboardingVolume: number;
+  offboardingVolume: number;
+  virtualTxVolume: number;
+  virtualTxCount: number;
+}
+
 export interface VTXO {
   txid: string;
   vout: number;

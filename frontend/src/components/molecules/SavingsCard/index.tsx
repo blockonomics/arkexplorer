@@ -77,11 +77,11 @@ const SavingsCard: React.FC<SavingsCardProps> = ({ virtualTxCount }) => {
         </Tooltip>
       </div>
 
-      <div className="text-xl font-bold text-emerald-900">
+      <div className="text-xl font-bold text-emerald-900 tabular-nums">
         ${totalUSDSaved.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
       </div>
-      
-      <div className="text-[10px] text-emerald-600 font-medium truncate">
+
+      <div className="text-[10px] text-emerald-600 font-medium truncate tabular-nums">
         ≈ {totalBTCSaved.toFixed(6)} BTC total
       </div>
     </div>

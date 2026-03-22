@@ -2,7 +2,11 @@ import React from 'react';
 import { ExternalLink, Github, Globe, Wallet } from 'lucide-react';
 import blockonomicsLogo from '../../../assets/blockonomics-logo.svg';
 
-export function Footer() {
+interface FooterProps {
+  onNavigate: (page: string) => void;
+}
+
+export function Footer({ onNavigate }: FooterProps) {
   return (
     <footer className="bg-white border-t border-gray-200 mt-12">
       <div className="max-w-7xl mx-auto px-6 py-8">
@@ -101,10 +105,18 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <p className="text-center text-xs text-gray-500">
+        <div className="mt-8 pt-6 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <p className="text-xs text-gray-500">
             © {new Date().getFullYear()} Ark Explorer. Open source Bitcoin Layer 2 network statistics.
           </p>
+          <div className="flex items-center gap-4 text-xs text-gray-500">
+            <button onClick={() => onNavigate('privacy')} className="hover:text-gray-900 transition-colors">
+              Privacy
+            </button>
+            <button onClick={() => onNavigate('terms')} className="hover:text-gray-900 transition-colors">
+              Terms
+            </button>
+          </div>
         </div>
       </div>
     </footer>

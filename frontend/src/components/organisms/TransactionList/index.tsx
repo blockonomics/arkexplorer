@@ -14,11 +14,11 @@ export function TransactionList({ transactions, onTransactionClick }: Transactio
         <h2 className="text-lg font-semibold text-gray-900">Recent Transactions</h2>
       </div>
       <div className="divide-y divide-gray-100">
-        {transactions.map((tx, idx) => (
-          <TransactionItem 
-            key={idx} 
-            txId={tx} 
-            onClick={() => onTransactionClick?.(tx)}
+        {transactions.map((txid) => (
+          <TransactionItem
+            key={txid}
+            txid={txid}
+            onClick={() => onTransactionClick?.(txid)}
           />
         ))}
       </div>

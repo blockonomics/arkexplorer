@@ -1,10 +1,10 @@
 import React, { useMemo } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import type { TrendPoint } from "../../../types";
 
-const NetworkTrendsChart: React.FC<{ trends: any[] | null }> = ({ trends }) => {
+const NetworkTrendsChart: React.FC<{ trends: TrendPoint[] | null }> = ({ trends }) => {
 
   const [activeTab, setActiveTab] = React.useState<"volume" | "count" | "flow">("volume");
-
 
   const chartData = useMemo(() => {
     if (!trends || !Array.isArray(trends)) return [];

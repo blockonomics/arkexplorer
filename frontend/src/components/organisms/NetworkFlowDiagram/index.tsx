@@ -3,6 +3,7 @@ import { Download, Upload, Activity, Repeat, HelpCircle, ArrowUpRight, ArrowDown
 import type { NetworkStats } from "../../../types";
 import Tooltip from "../../atoms/Tooltip";
 import SavingsCard from "../../molecules/SavingsCard";
+import TimeSavedCard from "../../molecules/TimeSavedCard";
 import { formatBTC } from "../../../utils/formatters";
 
 interface NetworkFlowDiagramProps {
@@ -48,7 +49,7 @@ const NetworkFlowDiagram: React.FC<NetworkFlowDiagramProps> = ({ stats }) => {
             <Download className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
             <span className="text-xs sm:text-sm font-semibold text-gray-600 uppercase tracking-wider">Onboarding</span>
           </div>
-          <div className="text-2xl sm:text-3xl font-bold text-gray-900 break-all">
+          <div className="text-2xl sm:text-3xl font-bold text-gray-900 break-all tabular-nums">
             {formatBTC(stats.onboardingVolume)} BTC
           </div>
           <div className="text-xs sm:text-sm text-gray-500 mt-1">Bitcoin entering</div>
@@ -60,7 +61,7 @@ const NetworkFlowDiagram: React.FC<NetworkFlowDiagramProps> = ({ stats }) => {
             <Upload className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
             <span className="text-xs sm:text-sm font-semibold text-gray-600 uppercase tracking-wider">Offboarding</span>
           </div>
-          <div className="text-2xl sm:text-3xl font-bold text-gray-900 break-all">
+          <div className="text-2xl sm:text-3xl font-bold text-gray-900 break-all tabular-nums">
             {formatBTC(stats.offboardingVolume)} BTC
           </div>
           <div className="text-xs sm:text-sm text-gray-500 mt-1">Bitcoin leaving</div>
@@ -68,7 +69,7 @@ const NetworkFlowDiagram: React.FC<NetworkFlowDiagramProps> = ({ stats }) => {
       </div>
 
       {/* Activity and Efficiency Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         
         {/* Transaction Count */}
         <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 flex flex-col justify-between">
@@ -77,7 +78,7 @@ const NetworkFlowDiagram: React.FC<NetworkFlowDiagramProps> = ({ stats }) => {
             <div className="text-xs sm:text-sm font-semibold text-slate-500 uppercase tracking-wider">Total Tx</div>
           </div>
           <div className="flex items-end justify-between">
-            <div className="text-lg sm:text-xl font-bold text-gray-900">
+            <div className="text-lg sm:text-xl font-bold text-gray-900 tabular-nums">
               {stats.virtualTxCount.toLocaleString()}
             </div>
             <TrendIndicator value={stats.txCountChange} />
@@ -91,7 +92,7 @@ const NetworkFlowDiagram: React.FC<NetworkFlowDiagramProps> = ({ stats }) => {
             <div className="text-xs sm:text-sm font-semibold text-slate-500 uppercase tracking-wider">Volume</div>
           </div>
           <div className="flex items-end justify-between">
-            <div className="text-lg sm:text-xl font-bold text-gray-900 break-all">
+            <div className="text-lg sm:text-xl font-bold text-gray-900 break-all tabular-nums">
               {formatBTC(stats.virtualTxVolume)} BTC
             </div>
             <TrendIndicator value={stats.volumeChange} />
@@ -100,6 +101,9 @@ const NetworkFlowDiagram: React.FC<NetworkFlowDiagramProps> = ({ stats }) => {
 
         {/* Savings Card (Internal Logic) */}
         <SavingsCard virtualTxCount={stats.virtualTxCount} />
+
+        {/* Time Saved Card */}
+        <TimeSavedCard virtualTxCount={stats.virtualTxCount} />
       </div>
     </div>
   );

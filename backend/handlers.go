@@ -118,13 +118,14 @@ func GetRecentTxs(w http.ResponseWriter, r *http.Request) {
     ctx := context.Background()
 
     var results []struct {
-        Txid      string
-        CreatedAt int64
+        Txid      string `bun:"txid" json:"txid"`
+        CreatedAt int64  `bun:"created_at" json:"createdAt"`
+        TxType    string `bun:"tx_type" json:"txType"`
     }
 
     err := DB.NewSelect().
         Model((*VTXO)(nil)).
-        ColumnExpr("DISTINCT txid, created_at").
+        ColumnExpr("DISTINCT txid, created_at, tx_type").
         Order("created_at DESC").
         Limit(10).
         Scan(ctx, &results)
@@ -134,14 +135,8 @@ func GetRecentTxs(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    // Extract just the txids
-    txids := make([]string, len(results))
-    for i, r := range results {
-        txids[i] = r.Txid
-    }
-
     w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(txids)
+    json.NewEncoder(w).Encode(results)
 }
 
 func SearchTx(w http.ResponseWriter, r *http.Request) {

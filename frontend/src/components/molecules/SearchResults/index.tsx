@@ -61,6 +61,20 @@ export function SearchResults({ results, loading, error, searchQuery }: SearchRe
     return acc;
   }, {} as Record<string, VTXO[]>);
 
+  const getTypeBadge = (type: string) => {
+    const colors: Record<string, string> = {
+      virtual: 'bg-purple-100 text-purple-800',
+      onboard: 'bg-blue-100 text-blue-800',
+      offboard: 'bg-orange-100 text-orange-800',
+      refresh: 'bg-gray-100 text-gray-800',
+    };
+    return (
+      <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${colors[type] || 'bg-gray-100'}`}>
+        {type}
+      </span>
+    );
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-4">
